@@ -15,7 +15,6 @@
 volatile sig_atomic_t sighupReceived = 0;
 
 void handler(int sigNum) {
-    sighupReceived = 1;  // Устанавливаем флаг, когда сигнал SIGHUP получен
     printf("SIGHUP received\n");
 }
 
