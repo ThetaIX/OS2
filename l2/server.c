@@ -62,26 +62,21 @@ int main() {
     sigset_t maskBlocked, maskOrig;
     char buf[BUFSIZE] = {0};
 
-    // Создание серверного сокета
     int serverFD = Socket(AF_INET, SOCK_STREAM, 0);
 
     socketAddress.sin_family = AF_INET;
     socketAddress.sin_addr.s_addr = INADDR_ANY;
     socketAddress.sin_port = htons(PORT);
 
-    // Привязка сокета к порту
     Bind(serverFD, (struct sockaddr*)&socketAddress, sizeof(socketAddress));
     
-    // Ожидание подключений
     Listen(serverFD, BACKLOG);
 
-    // Обработчик сигнала SIGHUP
     sigaction(SIGHUP, NULL, &sa);
     sa.sa_handler = handler;
     sa.sa_flags = SA_RESTART;
     sigaction(SIGHUP, &sa, NULL);
 
-    // Блокировка сигнала SIGHUP
     sigemptyset(&maskBlocked);
     sigemptyset(&maskOrig);
     sigaddset(&maskBlocked, SIGHUP);
@@ -95,23 +90,19 @@ int main() {
             FD_SET(incomingSockFD, &readfds);
         }
 
-        // Определяем максимальный дескриптор для pselect
         max = (incomingSockFD > serverFD) ? incomingSockFD : serverFD;
 
-        // Ожидание события на одном из сокетов
         if (pselect(max + 1, &readfds, NULL, NULL, NULL, &maskOrig) < 0 && errno != EINTR) {
             perror("pselect failed");
             exit(EXIT_FAILURE);
         }
 
-        // Обработка сигнала SIGHUP
         if (sighupReceived) {
             printf("SIGHUP received\n");
             sighupReceived = 0;
             continue;
         }
 
-        // Если есть данные на соединении
         if (incomingSockFD > 0 && FD_ISSET(incomingSockFD, &readfds)) {
             bytes = read(incomingSockFD, buf, BUFSIZE);
             if (bytes > 0) {
@@ -128,16 +119,13 @@ int main() {
             continue;
         }
 
-        // Если новое соединение на сервере
         if (FD_ISSET(serverFD, &readfds)) {
             struct sockaddr_in clientAddress;
             socklen_t addrlen = sizeof(clientAddress);
 
-            // Принимаем новое соединение
             int newSockFD = Accept(serverFD, (struct sockaddr*)&clientAddress, &addrlen);
             printf("New connection.\n");
 
-            // Если уже есть активное соединение, закрываем новое
             if (incomingSockFD > 0) {
                 printf("Closing new connection immediately.\n");
                 close(newSockFD);
@@ -149,5 +137,4 @@ int main() {
 
     close(serverFD);
     return 0;
-//sss
 }
