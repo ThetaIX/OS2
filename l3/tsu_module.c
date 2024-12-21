@@ -21,3 +21,6 @@ static void __exit tsu_exit(void)
 
 module_init(tsu_init);
 module_exit(tsu_exit);
+
+
+// через сколько минут стрелки часов выстроятся в одну линию
