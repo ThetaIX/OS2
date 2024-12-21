@@ -1,3 +1,4 @@
+#KERNELDIR ?= /run/current-system/kernel/lib/modules/$(shell uname -r)/build
 obj-m += tsu_module.o
 
 all:
