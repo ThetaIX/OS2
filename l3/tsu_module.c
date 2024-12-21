@@ -3,7 +3,7 @@
 #include <linux/init.h>
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Your Name");
+MODULE_AUTHOR("Ilya");
 MODULE_DESCRIPTION("TSU kernel module");
 
 // Функция инициализации
